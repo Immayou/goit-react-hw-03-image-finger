@@ -5,6 +5,7 @@ import Searchbar from '../Searchbar/Searchbar'
 import {ImageGallery} from "../ImageGallery/ImageGallery";
 import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
 import {Modal} from '../Modal/Modal'
+import {Button} from '../Button/Button'
 import { Wrapper } from "../App/App.styled";
 import { Loader } from "../Loader/Loader.styled";
 
@@ -15,18 +16,23 @@ export class App extends Component {
    searchValue: '',
    apiDataPictures: [],
    isLoading: false,
-   largeImageSrc: ''
+   largeImageSrc: '',
+   page: 1,
   }
 
   async componentDidUpdate (prevProps, prevState) {
     try {
-    if (prevState.searchValue !== this.state.searchValue) {
+    if (
+      prevState.searchValue !== this.state.searchValue ||
+      prevState.page !== this.state.page
+      ) {
     this.setState({isLoading: true, apiDataPictures: []})
-    const response = await axios.get(`?q=${this.state.searchValue}&page=1&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
+    const response = await axios.get(`?q=${this.state.searchValue}&page=${this.state.page}1&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
     if (response.data.hits.length > 0){
     this.setState ({apiDataPictures: response.data.hits, isLoading: false})}
     else  {
-      throw new Error()
+      this.setState({ isLoading: false})
+      this.showMessageIfEmptyQuery()
     }
   }
     } catch (error) {
@@ -35,8 +41,12 @@ export class App extends Component {
     }
   }
 
+  onLoadMoreHandler = () => {
+    this.setState(prevState => ({page: prevState.page + 1}))
+  }
+
   onFormSubmitHandler = value => {
-    this.setState({searchValue: value})
+    this.setState({searchValue: value, page: 1})
   }
 
   onImageHandler = largeImageUrl => {
@@ -48,6 +58,11 @@ export class App extends Component {
   }
 
   showErrorMessage () {
+    Notiflix.Notify.failure(
+      `Sorry, something went wrong. Please try again.`)
+  }
+
+  showMessageIfEmptyQuery () {
     Notiflix.Notify.failure(
       `Sorry, there are no images matching ${this.state.searchValue}. Please try again.`)
   }
@@ -61,6 +76,7 @@ export class App extends Component {
     <ImageGallery>
     <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
     </ImageGallery>)}
+    <Button loadMore={this.onLoadMoreHandler}/>
     {this.state.largeImageSrc.length > 0 &&
       <Modal onModalClose={this.onModalCloseHandler}>
       <img src={this.state.largeImageSrc} alt="large_image" />

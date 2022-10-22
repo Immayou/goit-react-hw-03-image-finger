@@ -20,6 +20,7 @@ export default class Searchbar extends Component {
     }
     this.props.onSubmit(this.state.searchInput)
     this.setState({searchInput: ''})
+    e.target.reset();
     }
     
     render () {
