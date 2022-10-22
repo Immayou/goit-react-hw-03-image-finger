@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Notiflix from "notiflix";
 import { HeaderForm, SearchForm, SearchFormButton, SearchFormButtonLabel, SearchFormInput } from "../Searchbar/Searchbar.styled";
 
 export default class Searchbar extends Component {
@@ -14,7 +15,7 @@ export default class Searchbar extends Component {
     formSubmitHandler = e => {
     e.preventDefault();
     if (this.state.searchInput.trim() === '') {
-        toast('Please enter the query')
+      Notiflix.Notify.info("Enter your query, please!")
         return
     }
     this.props.onSubmit(this.state.searchInput)
@@ -25,7 +26,7 @@ export default class Searchbar extends Component {
         return (
     <HeaderForm>
     <SearchForm onSubmit={this.formSubmitHandler}>
-      <SearchFormButton type="submit">
+      <SearchFormButton type="submit" disabled={this.props.isSubmitting}>
         <SearchFormButtonLabel>Search</SearchFormButtonLabel>
       </SearchFormButton>
   
