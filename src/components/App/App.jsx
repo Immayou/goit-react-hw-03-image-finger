@@ -1,12 +1,13 @@
 import React, { Component } from "react"
 import axios from "axios";
 import Notiflix from "notiflix";
+import { RotatingLines } from  'react-loader-spinner';
 import Searchbar from '../Searchbar/Searchbar'
 import {ImageGallery} from "../ImageGallery/ImageGallery";
 import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
+import {Modal} from '../Modal/Modal'
 
 import { Wrapper } from "../App/App.styled";
-
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
@@ -16,6 +17,7 @@ export class App extends Component {
    searchValue: '',
    apiDataPictures: [],
    isLoading: false,
+   largeImageSrc: ''
   }
 
   async componentDidUpdate (prevProps, prevState) {
@@ -39,21 +41,42 @@ export class App extends Component {
     this.setState({searchValue: value})
   }
 
+  onImageHandler = largeImageUrl => {
+    this.setState({largeImageSrc: largeImageUrl})
+  }
+
   showErrorMessage () {
     Notiflix.Notify.failure(
-      `Sorry, there are no images matching your ${this.state.searchValue}. Please try again.`)
+      `Sorry, there are no images matching ${this.state.searchValue}. Please try again.`)
   }
 
   render () {
   return (
     <Wrapper>
     <Searchbar onSubmit={this.handleFormSubmit} isSubmitting={this.state.isLoading}/>
-    {this.state.isLoading && <div>Loader...</div>}
+    {this.state.isLoading && <RotatingLines
+  strokeColor="grey"
+  strokeWidth="5"
+  animationDuration="0.75"
+  width="96"
+  visible={true}
+/>}
     {this.state.apiDataPictures && (
     <ImageGallery>
-    <ImageGalleryItem getPictures={this.state.apiDataPictures}/>
+    <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
     </ImageGallery>)}
+    {this.state.largeImageSrc.length > 0 &&
+      <Modal>
+      <img src={this.state.largeImageSrc} alt="large_image" />
+      </Modal>}
     </Wrapper>
   );
 };
 }
+
+
+// const Loader = styled(RotatingLines)`
+//   position: absolute;
+//   top: 0;
+//   right: 0;
+// `
