@@ -85,9 +85,3 @@ export class App extends Component {
   );
 };
 }
-
-
-// const Loader = styled(RotatingLines)`
-//   display: block;
-//   margin: 0 auto;
-// `
