@@ -3,7 +3,7 @@ import { ImageGalleryPicture, PictureItem } from "../ImageGalleryItem/ImageGalle
 export const ImageGalleryItem = ({getPictures, onImageClick}) => {
 
     return (
-    getPictures.map(({id, webformatURL, largeImageURL} = getPictures) => 
+    getPictures.map(({id, webformatURL, largeImageURL}) => 
     (<ImageGalleryPicture key={id}>
         <PictureItem src={webformatURL} alt="picture_data" onClick={() => onImageClick(largeImageURL)} />
     </ImageGalleryPicture>))

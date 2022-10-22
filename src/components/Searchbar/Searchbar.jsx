@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import Notiflix from "notiflix";
 import { HeaderForm, SearchForm, SearchFormButton, SearchFormButtonLabel, SearchFormInput } from "../Searchbar/Searchbar.styled";
 
-export default class Searchbar extends Component {
+export class Searchbar extends Component {
 
     state = {
         searchInput: '',
     }
 
     inputHandler = e => {
-        this.setState ({searchInput:  e.currentTarget.value.toLowerCase()})
+        this.setState ({searchInput: e.currentTarget.value.toLowerCase()})
     }
 
     formSubmitHandler = e => {
@@ -20,7 +20,7 @@ export default class Searchbar extends Component {
     }
     this.props.onSubmit(this.state.searchInput)
     this.setState({searchInput: ''})
-    e.target.reset();
+    // e.target.reset();
     }
     
     render () {
