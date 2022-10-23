@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Notiflix from "notiflix";
 import { HeaderForm, SearchForm, SearchFormButton, SearchFormButtonLabel, SearchFormInput } from "../Searchbar/Searchbar.styled";
-
+import {TiEject} from 'react-icons/ti';
 export class Searchbar extends Component {
 
     state = {
@@ -28,7 +28,9 @@ export class Searchbar extends Component {
     <HeaderForm>
     <SearchForm onSubmit={this.formSubmitHandler}>
       <SearchFormButton type="submit" disabled={this.props.isSubmitting}>
-        <SearchFormButtonLabel>Search</SearchFormButtonLabel>
+        {/* <SearchFormButtonLabel> */}
+          <TiEject />
+        {/* </SearchFormButtonLabel> */}
       </SearchFormButton>
   
       <SearchFormInput
