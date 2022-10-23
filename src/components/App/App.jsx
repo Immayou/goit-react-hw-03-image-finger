@@ -51,14 +51,11 @@ export class App extends Component {
         this.setState(prevState => ({apiDataPictures: dataResult, page: prevState.page + 1}))
       }
       
-
-      console.log(this.state.apiDataPictures.length)
-      console.log(this.state.totalAmount)
-      if (this.state.apiDataPictures.length === this.state.totalAmount) {
-        this.setState({ isLoading: false})
-        this.showMessageIfListIsEnd()
-        return
-      }
+      // if (this.state.apiDataPictures.length === this.state.totalAmount) {
+      //   this.setState({ isLoading: false})
+      //   this.showMessageIfListIsEnd()
+      //   return
+      // }
 
     } catch (error) {
       this.setState({ isLoading: false})
@@ -99,9 +96,14 @@ export class App extends Component {
       `Wow! You watched all of the pictures. Please, try new query!`)
   }
 
+  checkToShowLoadMore () {
+    const isLoadBtnShown = Math.ceil(this.state.totalAmount/12) > this.state.page
+    return isLoadBtnShown
+  }
+
   render () {
-    const checkToShowLoadMore = Math.ceil(this.state.totalAmount/12) <= this.state.page
-  return (
+    const isLoadBtn = this.checkToShowLoadMore()
+      return (
     <Wrapper>
     <Searchbar onSubmit={this.onFormSubmitHandler} isSubmitting={this.state.isLoading}/>
     {this.state.isLoading && <SpinnerLoader/>}
@@ -109,7 +111,7 @@ export class App extends Component {
     <ImageGallery>
     <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
     </ImageGallery>)}
-    {!checkToShowLoadMore && <Button loadMore={this.onLoadMoreHandler}/>}
+    {isLoadBtn && <Button loadMore={this.onLoadMoreHandler}/>}
     {this.state.largeImageSrc.length > 0 &&
       <Modal onModalClose={this.onModalCloseHandler}>
       <img src={this.state.largeImageSrc} alt="large_image" />
