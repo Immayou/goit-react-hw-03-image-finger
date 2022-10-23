@@ -25,7 +25,7 @@ export class App extends Component {
     try {
       this.setState({ isLoading: true})
       const response = await axios.get(`?q=${value}&page=${page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
-      this.setState({ isLoading: false, totalAmount: response.data.total })
+      this.setState({ isLoading: false, totalAmount: response.data.totalHits })
       return await response.data.hits
     } catch (error) {
       this.setState({ isLoading: false})
@@ -50,12 +50,15 @@ export class App extends Component {
       if (this.state.page === 1) {
         this.setState(prevState => ({apiDataPictures: dataResult, page: prevState.page + 1}))
       }
+      
 
-      // if (this.state.apiDataPictures.length === this.state.totalAmount) {
-      //   this.setState({ isLoading: false})
-      //   this.showMessageIfListIsEnd()
-      //   return
-      // }
+      console.log(this.state.apiDataPictures.length)
+      console.log(this.state.totalAmount)
+      if (this.state.apiDataPictures.length === this.state.totalAmount) {
+        this.setState({ isLoading: false})
+        this.showMessageIfListIsEnd()
+        return
+      }
 
     } catch (error) {
       this.setState({ isLoading: false})
@@ -105,7 +108,7 @@ export class App extends Component {
     <ImageGallery>
     <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
     </ImageGallery>)}
-    {this.state.apiDataPictures.length > 0 && <Button loadMore={this.onLoadMoreHandler}/>}
+    {this.state.totalAmount > 0 && this.state.totalAmount < 12 && <Button loadMore={this.onLoadMoreHandler}/>}
     {this.state.largeImageSrc.length > 0 &&
       <Modal onModalClose={this.onModalCloseHandler}>
       <img src={this.state.largeImageSrc} alt="large_image" />
