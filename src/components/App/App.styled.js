@@ -5,6 +5,4 @@ export const Wrapper = styled.div`
     grid-template-columns: 1fr;
     grid-gap: 16px;
     padding-bottom: 24px;
-    /* padding-bottom: 24px;
-    text-align: center; */
 `

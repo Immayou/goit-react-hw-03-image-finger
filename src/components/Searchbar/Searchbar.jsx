@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Notiflix from "notiflix";
-import { HeaderForm, SearchForm, SearchFormButton, SearchFormButtonLabel, SearchFormInput } from "../Searchbar/Searchbar.styled";
+import { HeaderForm, SearchForm, SearchFormButton, SearchFormInput } from "../Searchbar/Searchbar.styled";
 import {TiEject} from 'react-icons/ti';
 export class Searchbar extends Component {
 
@@ -19,7 +19,7 @@ export class Searchbar extends Component {
         return
     }
     this.props.onSubmit(this.state.searchInput)
-    this.setState({searchInput: ''})
+    // this.setState({searchInput: ''})
     // e.target.reset();
     }
     
@@ -28,9 +28,7 @@ export class Searchbar extends Component {
     <HeaderForm>
     <SearchForm onSubmit={this.formSubmitHandler}>
       <SearchFormButton type="submit" disabled={this.props.isSubmitting}>
-        {/* <SearchFormButtonLabel> */}
-          <TiEject />
-        {/* </SearchFormButtonLabel> */}
+          <TiEject size = '25px'/>
       </SearchFormButton>
   
       <SearchFormInput
