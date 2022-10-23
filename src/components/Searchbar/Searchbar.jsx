@@ -1,8 +1,13 @@
 import React, { Component } from "react";
+import PropTypes from 'prop-types';
 import Notiflix from "notiflix";
 import { HeaderForm, SearchForm, SearchFormButton, SearchFormInput } from "../Searchbar/Searchbar.styled";
 import {TiEject} from 'react-icons/ti';
 export class Searchbar extends Component {
+
+    static propTypes = {
+      isSubmitting: PropTypes.bool.isRequired
+    }
 
     state = {
         searchInput: '',
@@ -13,14 +18,13 @@ export class Searchbar extends Component {
     }
 
     formSubmitHandler = e => {
+    const {searchInput} = this.state
     e.preventDefault();
-    if (this.state.searchInput.trim() === '') {
+    if (searchInput.trim() === '') {
       Notiflix.Notify.info("Enter your query, please!")
-        return
+      return
     }
-    this.props.onSubmit(this.state.searchInput)
-    // this.setState({searchInput: ''})
-    // e.target.reset();
+    this.props.onSubmit(searchInput)
     }
     
     render () {
@@ -30,7 +34,6 @@ export class Searchbar extends Component {
       <SearchFormButton type="submit" disabled={this.props.isSubmitting}>
           <TiEject size = '25px'/>
       </SearchFormButton>
-  
       <SearchFormInput
         type="text"
         autoComplete="off"

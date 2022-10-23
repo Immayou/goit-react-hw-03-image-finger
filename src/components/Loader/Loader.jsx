@@ -1,7 +1,6 @@
 import { RotatingLines } from  'react-loader-spinner';
 import { Loader } from "../Loader/Loader.styled";
 
-
 export const SpinnerLoader = () => {
     return (
       <Loader>

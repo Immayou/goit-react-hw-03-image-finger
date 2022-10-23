@@ -6,8 +6,8 @@ import {ImageGallery} from "../ImageGallery/ImageGallery";
 import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
 import {Modal} from '../Modal/Modal'
 import {Button} from '../Button/Button'
-import { Wrapper } from "../App/App.styled";
-import { SpinnerLoader } from "../Loader/Loader";
+import {Wrapper} from "../App/App.styled";
+import {SpinnerLoader} from "../Loader/Loader";
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 export class App extends Component {
@@ -21,56 +21,45 @@ export class App extends Component {
    page: 1,
   }
 
-  makeRequest = async (value, page) => {
-    try {
-      this.setState({ isLoading: true})
+  makeApiRequest = async (value, page) => {
       const response = await axios.get(`?q=${value}&page=${page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
-      this.setState({ isLoading: false, totalAmount: response.data.totalHits })
-      return await response.data.hits
-    } catch (error) {
-      this.setState({ isLoading: false})
-      this.showErrorMessage()
-    }
+      return await response.data
   }
 
-  onRequestHandler = async (value = this.state.searchValue, page= this.state.page) => {
+  onRequestHandler = async (value = this.state.searchValue, page = this.state.page) => {
     try {
-      const dataResult = await this.makeRequest(value, page)
+      this.setState({ isLoading: true})
+      const dataResult = await this.makeApiRequest(value, page)
+      const dataHits = await dataResult.hits
+      const dataTotalHits = await dataResult.totalHits
+      this.setState({ isLoading: false, totalAmount: dataTotalHits }) 
 
-      if (dataResult.length === 0) {
-        this.setState({ isLoading: false})
-        this.showMessageIfEmptyQuery()
+      if (dataHits.length === 0) {
+        this.showMessageIfInvalidRequest()
         return
       }
 
       if (this.state.page > 1) {
-        this.setState(prevState => ({apiDataPictures:[...prevState.apiDataPictures, ...dataResult]}))
+        this.setState(prevState => ({apiDataPictures:[...prevState.apiDataPictures, ...dataHits]}))
       }
 
       if (this.state.page === 1) {
-        this.setState(prevState => ({apiDataPictures: dataResult, page: prevState.page + 1}))
+        this.setState(prevState => ({apiDataPictures: dataHits, page: prevState.page + 1}))
       }
-      
-      // if (this.state.apiDataPictures.length === this.state.totalAmount) {
-      //   this.setState({ isLoading: false})
-      //   this.showMessageIfListIsEnd()
-      //   return
-      // }
 
     } catch (error) {
-      this.setState({ isLoading: false})
       this.showErrorMessage()
     }
-  }
-
-  onLoadMoreHandler = async () => {
-    this.setState(prevState => ({page: prevState.page + 1}))
-    await this.onRequestHandler()
   }
 
   onFormSubmitHandler = async value => {
     this.setState({searchValue: value, page: 1, apiDataPictures: []})
     await this.onRequestHandler(value, 1)
+  }
+
+  onLoadMoreHandler = async () => {
+    this.setState(prevState => ({page: prevState.page + 1}))
+    await this.onRequestHandler()
   }
 
   onImageHandler = largeImageUrl => {
@@ -86,14 +75,9 @@ export class App extends Component {
       `Sorry, something went wrong. Please try again.`)
   }
 
-  showMessageIfEmptyQuery () {
+  showMessageIfInvalidRequest () {
     Notiflix.Notify.failure(
       `Sorry, there are no images matching ${this.state.searchValue}. Please try again.`)
-  }
-
-  showMessageIfListIsEnd () {
-    Notiflix.Notify.info(
-      `Wow! You watched all of the pictures. Please, try new query!`)
   }
 
   checkToShowLoadMore () {
@@ -102,22 +86,22 @@ export class App extends Component {
   }
 
   render () {
-    const isLoadBtn = this.checkToShowLoadMore()
+    const {isLoading, apiDataPictures, largeImageSrc} = this.state
+    const isLoadMoreBtn = this.checkToShowLoadMore()
       return (
     <Wrapper>
-    <Searchbar onSubmit={this.onFormSubmitHandler} isSubmitting={this.state.isLoading}/>
-    {this.state.isLoading && <SpinnerLoader/>}
-    {this.state.apiDataPictures.length > 0 && (
-    <ImageGallery>
-    <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
-    </ImageGallery>)}
-    {isLoadBtn && <Button loadMore={this.onLoadMoreHandler}/>}
-    {this.state.largeImageSrc.length > 0 &&
-      <Modal onModalClose={this.onModalCloseHandler}>
-      <img src={this.state.largeImageSrc} alt="large_image" />
-      </Modal>}
-    </Wrapper>
-  );
-};
-}
+          <Searchbar onSubmit={this.onFormSubmitHandler} isSubmitting={isLoading}/>
+              {isLoading && <SpinnerLoader/>}
+                  {apiDataPictures.length > 0 && (
+                  <ImageGallery>
+                    <ImageGalleryItem getPictures={apiDataPictures} onImageClick={this.onImageHandler}/>
+                    </ImageGallery>)}
+                    {isLoadMoreBtn && <Button loadMore={this.onLoadMoreHandler}/>}
+                    {largeImageSrc.length > 0 && <Modal onModalClose={this.onModalCloseHandler}>
+                      <img src={largeImageSrc} alt="large_image" />
+                      </Modal>}
+                      </Wrapper>
+                      );
+                    };
+                  }
 
