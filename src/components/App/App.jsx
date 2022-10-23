@@ -21,24 +21,21 @@ export class App extends Component {
    page: 1,
   }
 
-  makeRequest = async (value) => {
+  makeRequest = async (value, page) => {
     try {
       this.setState({ isLoading: true})
-      if (this.state.page === 1) {
-        this.setState({ apiDataPictures: [] })
-      }
-      const response = await axios.get(`?q=${value}&page=${this.state.page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
+      const response = await axios.get(`?q=${value}&page=${page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
       this.setState({ isLoading: false, totalAmount: response.data.total })
-      return response.data.hits
+      return await response.data.hits
     } catch (error) {
       this.setState({ isLoading: false})
       this.showErrorMessage()
     }
   }
 
-  onRequestHandler = async (value = this.state.searchValue) => {
+  onRequestHandler = async (value = this.state.searchValue, page= this.state.page) => {
     try {
-      const dataResult = await this.makeRequest(value)
+      const dataResult = await this.makeRequest(value, page)
 
       if (dataResult.length === 0) {
         this.setState({ isLoading: false})
@@ -47,7 +44,7 @@ export class App extends Component {
       }
 
       if (this.state.page > 1) {
-        this.setState(prevState => ({apiDataPictures:[...prevState.apiDataPictures, ...dataResult], page: prevState.page + 1}))
+        this.setState(prevState => ({apiDataPictures:[...prevState.apiDataPictures, ...dataResult]}))
       }
 
       if (this.state.page === 1) {
@@ -66,13 +63,14 @@ export class App extends Component {
     }
   }
 
-  onLoadMoreHandler = () => {
-      this.onRequestHandler()
+  onLoadMoreHandler = async () => {
+    this.setState(prevState => ({page: prevState.page + 1}))
+    await this.onRequestHandler()
   }
 
-  onFormSubmitHandler = value => {
-    this.setState({searchValue: value, page: 1})
-    this.onRequestHandler(value)
+  onFormSubmitHandler = async value => {
+    this.setState({searchValue: value, page: 1, apiDataPictures: []})
+    await this.onRequestHandler(value, 1)
   }
 
   onImageHandler = largeImageUrl => {
