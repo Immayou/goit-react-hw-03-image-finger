@@ -100,6 +100,7 @@ export class App extends Component {
   }
 
   render () {
+    const checkToShowLoadMore = Math.ceil(this.state.totalAmount/12) <= this.state.page
   return (
     <Wrapper>
     <Searchbar onSubmit={this.onFormSubmitHandler} isSubmitting={this.state.isLoading}/>
@@ -108,7 +109,7 @@ export class App extends Component {
     <ImageGallery>
     <ImageGalleryItem getPictures={this.state.apiDataPictures} onImageClick={this.onImageHandler}/>
     </ImageGallery>)}
-    {this.state.totalAmount > 0 && this.state.totalAmount < 12 && <Button loadMore={this.onLoadMoreHandler}/>}
+    {!checkToShowLoadMore && <Button loadMore={this.onLoadMoreHandler}/>}
     {this.state.largeImageSrc.length > 0 &&
       <Modal onModalClose={this.onModalCloseHandler}>
       <img src={this.state.largeImageSrc} alt="large_image" />
