@@ -1,15 +1,13 @@
-import React, { Component } from "react"
-import axios from "axios";
+import React, { Component } from "react";
 import Notiflix from "notiflix";
-import {Searchbar} from '../Searchbar/Searchbar'
+import {makeApiRequest} from "../../services/api";
+import {Searchbar} from '../Searchbar/Searchbar';
 import {ImageGallery} from "../ImageGallery/ImageGallery";
-import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem'
-import {Modal} from '../Modal/Modal'
-import {Button} from '../Button/Button'
+import {ImageGalleryItem} from '../ImageGalleryItem/ImageGalleryItem';
+import {Modal} from '../Modal/Modal';
+import {Button} from '../Button/Button';
 import {Wrapper} from "../App/App.styled";
 import {SpinnerLoader} from "../Loader/Loader";
-
-axios.defaults.baseURL = 'https://pixabay.com/api/';
 export class App extends Component {
 
   state = {
@@ -20,16 +18,11 @@ export class App extends Component {
    totalAmount: null,
    page: 1,
   }
-
-  makeApiRequest = async (value, page) => {
-      const response = await axios.get(`?q=${value}&page=${page}&key=${process.env.REACT_APP_API_KEY}&image_type=photo&orientation=horizontal&per_page=12`)
-      return await response.data
-  }
-
+  
   onRequestHandler = async (value = this.state.searchValue, page = this.state.page) => {
     try {
       this.setState({ isLoading: true})
-      const dataResult = await this.makeApiRequest(value, page)
+      const dataResult = await makeApiRequest(value, page)
       const dataHits = await dataResult.hits
       const dataTotalHits = await dataResult.totalHits
       this.setState({ isLoading: false, totalAmount: dataTotalHits }) 
@@ -81,7 +74,9 @@ export class App extends Component {
   }
 
   checkToShowLoadMore () {
-    const isLoadBtnShown = Math.ceil(this.state.totalAmount/12) > this.state.page
+    const isLoadBtnShown = Math.ceil(this.state.totalAmount/12) > this.state.page - 1
+    console.log(Math.ceil(this.state.totalAmount/12))
+    console.log(this.state.page)
     return isLoadBtnShown
   }
 
@@ -97,7 +92,7 @@ export class App extends Component {
                     <ImageGalleryItem getPictures={apiDataPictures} onImageClick={this.onImageHandler}/>
                     </ImageGallery>)}
                     {isLoadMoreBtn && <Button loadMore={this.onLoadMoreHandler}/>}
-                    {largeImageSrc.length > 0 && <Modal onModalClose={this.onModalCloseHandler}>
+                    {largeImageSrc > 0 && <Modal onModalClose={this.onModalCloseHandler}>
                       <img src={largeImageSrc} alt="large_image" />
                       </Modal>}
                       </Wrapper>
