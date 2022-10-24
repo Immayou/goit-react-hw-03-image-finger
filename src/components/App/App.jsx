@@ -97,7 +97,7 @@ export class App extends Component {
                     <ImageGalleryItem getPictures={apiDataPictures} onImageClick={this.onImageHandler}/>
                     </ImageGallery>)}
                     {isLoadMoreBtn && <Button loadMore={this.onLoadMoreHandler}/>}
-                    {largeImageSrc > 0 && <Modal onModalClose={this.onModalCloseHandler}>
+                    {largeImageSrc && <Modal onModalClose={this.onModalCloseHandler}>
                       <img src={largeImageSrc} alt="large_image" />
                       </Modal>}
                       </Wrapper>
