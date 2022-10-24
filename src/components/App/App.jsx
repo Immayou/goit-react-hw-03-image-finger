@@ -18,7 +18,16 @@ export class App extends Component {
    totalAmount: null,
    page: 1,
   }
-  
+
+  async componentDidUpdate (prevProps, prevState) {
+    if (
+      prevState.searchValue !== this.state.searchValue ||
+      prevState.page !== this.state.page
+      ) {
+        await this.onRequestHandler()
+        }            
+  }
+
   onRequestHandler = async (value = this.state.searchValue, page = this.state.page) => {
     try {
       this.setState({ isLoading: true})
@@ -37,7 +46,7 @@ export class App extends Component {
       }
 
       if (this.state.page === 1) {
-        this.setState(prevState => ({apiDataPictures: dataHits, page: prevState.page + 1}))
+        this.setState(prevState => ({apiDataPictures: dataHits}))
       }
 
     } catch (error) {
@@ -47,12 +56,10 @@ export class App extends Component {
 
   onFormSubmitHandler = async value => {
     this.setState({searchValue: value, page: 1, apiDataPictures: []})
-    await this.onRequestHandler(value, 1)
   }
 
   onLoadMoreHandler = async () => {
     this.setState(prevState => ({page: prevState.page + 1}))
-    await this.onRequestHandler()
   }
 
   onImageHandler = largeImageUrl => {
@@ -74,9 +81,7 @@ export class App extends Component {
   }
 
   checkToShowLoadMore () {
-    const isLoadBtnShown = Math.ceil(this.state.totalAmount/12) > this.state.page - 1
-    console.log(Math.ceil(this.state.totalAmount/12))
-    console.log(this.state.page)
+    const isLoadBtnShown = Math.ceil(this.state.totalAmount/12) > this.state.page 
     return isLoadBtnShown
   }
 
