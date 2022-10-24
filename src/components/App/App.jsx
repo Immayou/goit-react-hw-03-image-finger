@@ -28,10 +28,11 @@ export class App extends Component {
         }            
   }
 
-  onRequestHandler = async (value = this.state.searchValue, page = this.state.page) => {
+  onRequestHandler = async () => {
+    const {searchValue, page} = this.state
     try {
       this.setState({ isLoading: true})
-      const dataResult = await makeApiRequest(value, page)
+      const dataResult = await makeApiRequest(searchValue, page)
       const dataHits = await dataResult.hits
       const dataTotalHits = await dataResult.totalHits
       this.setState({ isLoading: false, totalAmount: dataTotalHits }) 
@@ -41,11 +42,11 @@ export class App extends Component {
         return
       }
 
-      if (this.state.page > 1) {
+      if (page > 1) {
         this.setState(prevState => ({apiDataPictures:[...prevState.apiDataPictures, ...dataHits]}))
       }
 
-      if (this.state.page === 1) {
+      if (page === 1) {
         this.setState(prevState => ({apiDataPictures: dataHits}))
       }
 
